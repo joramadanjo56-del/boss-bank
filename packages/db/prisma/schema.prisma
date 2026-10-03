@@ -1,0 +1,124 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  MEMBER
+  ADMIN
+}
+
+enum UserStatus {
+  ACTIVE
+  SUSPENDED
+}
+
+enum TransactionKind {
+  DEPOSIT
+  TRANSFER
+  ADJUSTMENT
+}
+
+enum LedgerDirection {
+  DEBIT
+  CREDIT
+}
+
+enum LedgerAccountType {
+  WALLET
+  SYSTEM
+}
+
+model User {
+  id           String      @id @default(cuid())
+  name         String      @db.VarChar(80)
+  email        String      @unique @db.VarChar(254)
+  passwordHash String
+  role         UserRole    @default(MEMBER)
+  status       UserStatus  @default(ACTIVE)
+  wallet       Wallet?
+  sessions     Session[]
+  auditEvents  AuditLog[]  @relation("AuditActor")
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+}
+
+model Wallet {
+  id             String        @id @default(cuid())
+  userId         String        @unique
+  accountNumber  String        @unique @db.VarChar(12)
+  currency       String        @default("SSP") @db.Char(3)
+  balanceMinor   BigInt        @default(0)
+  user           User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  sent           Transaction[] @relation("SenderWallet")
+  received       Transaction[] @relation("RecipientWallet")
+  ledgerEntries  LedgerEntry[]
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  @@index([createdAt])
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  tokenHash String   @unique
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@index([userId, expiresAt])
+  @@index([expiresAt])
+}
+
+model Transaction {
+  id                String          @id @default(cuid())
+  kind              TransactionKind
+  amountMinor       BigInt
+  memo              String?         @db.VarChar(140)
+  category          String?         @db.VarChar(40)
+  senderWalletId    String?
+  recipientWalletId String?
+  senderWallet      Wallet?         @relation("SenderWallet", fields: [senderWalletId], references: [id], onDelete: Restrict)
+  recipientWallet   Wallet?         @relation("RecipientWallet", fields: [recipientWalletId], references: [id], onDelete: Restrict)
+  ledgerEntries     LedgerEntry[]
+  createdAt         DateTime        @default(now())
+
+  @@index([senderWalletId, createdAt])
+  @@index([recipientWalletId, createdAt])
+}
+
+model LedgerEntry {
+  id              String            @id @default(cuid())
+  transactionId   String
+  transaction     Transaction       @relation(fields: [transactionId], references: [id], onDelete: Restrict)
+  accountType     LedgerAccountType
+  walletId        String?
+  wallet          Wallet?           @relation(fields: [walletId], references: [id], onDelete: Restrict)
+  systemAccount   String?           @db.VarChar(60)
+  direction       LedgerDirection
+  amountMinor     BigInt
+  createdAt       DateTime          @default(now())
+
+  @@index([walletId, createdAt])
+  @@index([transactionId])
+}
+
+model AuditLog {
+  id         String   @id @default(cuid())
+  actorId    String?
+  actor      User?    @relation("AuditActor", fields: [actorId], references: [id], onDelete: SetNull)
+  action     String   @db.VarChar(80)
+  targetType String   @db.VarChar(60)
+  targetId   String?  @db.VarChar(80)
+  metadata   Json?
+  ipAddress  String?  @db.VarChar(64)
+  createdAt  DateTime @default(now())
+
+  @@index([actorId, createdAt])
+  @@index([targetType, targetId, createdAt])
+}

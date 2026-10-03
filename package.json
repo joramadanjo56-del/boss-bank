@@ -1,0 +1,18 @@
+{
+  "name": "boss-bank",
+  "private": true,
+  "workspaces": ["apps/*", "packages/*"],
+  "scripts": {
+    "dev": "concurrently -k -n API,WEB -c green,cyan \"npm:dev --workspace @boss-bank/api\" \"npm:dev --workspace @boss-bank/web\"",
+    "build": "npm run build --workspace @boss-bank/shared && npm run build --workspace @boss-bank/db && npm run build --workspace @boss-bank/api && npm run build --workspace @boss-bank/web",
+    "test": "npm run test --workspace @boss-bank/api",
+    "db:generate": "npm run db:generate --workspace @boss-bank/db",
+    "db:deploy": "npm run db:generate --workspace @boss-bank/db && npm run db:deploy --workspace @boss-bank/db",
+    "db:migrate": "npm run db:migrate --workspace @boss-bank/db",
+    "admin:promote": "npm run admin:promote --workspace @boss-bank/api --"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2",
+    "typescript": "^5.8.3"
+  }
+}
