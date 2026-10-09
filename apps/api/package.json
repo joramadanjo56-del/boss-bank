@@ -8,7 +8,8 @@
     "dev": "tsx watch src/server.ts",
     "build": "tsc -p tsconfig.json",
     "test": "DATABASE_URL=${TEST_DATABASE_URL:-postgresql://boss_bank:boss_bank@localhost:5432/boss_bank_test?schema=public} tsx --test test/*.test.ts",
-    "admin:promote": "tsx src/promote-admin.ts"
+    "admin:promote": "tsx src/promote-admin.ts",
+    "start": "node dist/server.js"
   },
   "dependencies": {
     "@boss-bank/db": "*",
