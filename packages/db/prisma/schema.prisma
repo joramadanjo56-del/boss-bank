@@ -32,6 +32,11 @@ enum LedgerAccountType {
   WALLET
   SYSTEM
 }
+enum TransactionStatus {
+  PENDING
+  COMPLETED
+  FAILED
+}
 
 model User {
   id           String      @id @default(cuid())
@@ -77,8 +82,10 @@ model Session {
 
 model Transaction {
   id                String          @id @default(cuid())
-  kind              TransactionKind
-  amountMinor       BigInt
+  kind           TransactionKind
+  status         TransactionStatus @default(COMPLETED)
+  idempotencyKey String?           @unique @db.VarChar(80)
+  amountMinor    BigInt
   memo              String?         @db.VarChar(140)
   category          String?         @db.VarChar(40)
   senderWalletId    String?
