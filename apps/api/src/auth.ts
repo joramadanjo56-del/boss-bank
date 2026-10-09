@@ -84,7 +84,7 @@ export async function registerUser(
   db: PrismaClient,
   input: { name: string; email: string; password: string },
 ) {
-  const email = input.email.toLowerCase();
+  const email = input.email.trim().toLowerCase(); if (!/^[^ @]+@[^ @]+[.][^ @]{2,}$/.test(email)) throw new HttpError(400, "Enter a valid email address", "INVALID_EMAIL");
   const passwordHash = await bcrypt.hash(input.password, 12);
 
   for (let attempt = 0; attempt < 4; attempt += 1) {
