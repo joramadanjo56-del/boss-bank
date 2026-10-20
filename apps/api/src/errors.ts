@@ -8,3 +8,9 @@ export class HttpError extends Error {
     this.name = "HttpError";
   }
 }
+
+    export class NotFoundError extends HttpError {
+      constructor(message = "Not found") {
+          super(404, message, "NOT_FOUND");
+            }
+            }
