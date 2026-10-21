@@ -27,13 +27,13 @@ export function setSessionCookie(response: Response, token: string): void {
   const secure = process.env.NODE_ENV === "production" ? "; Secure" : "";
   response.setHeader(
     "Set-Cookie",
-    `${SESSION_COOKIE}=${token}; HttpOnly; SameSite=Strict; Path=/api; Max-Age=${sessionLifetimeMs / 1000}${secure}`,
+    `${SESSION_COOKIE}=${token}; HttpOnly; SameSite=None; Path=/api; Max-Age=${sessionLifetimeMs / 1000}${secure}`,
   );
 }
 
 export function clearSessionCookie(response: Response): void {
   const secure = process.env.NODE_ENV === "production" ? "; Secure" : "";
-  response.setHeader("Set-Cookie", `${SESSION_COOKIE}=; HttpOnly; SameSite=Strict; Path=/api; Max-Age=0${secure}`);
+  response.setHeader("Set-Cookie", `${SESSION_COOKIE}=; HttpOnly; SameSite=None; Path=/api; Max-Age=0${secure}`);
 }
 
 function sessionToken(request: Request): string | undefined {
