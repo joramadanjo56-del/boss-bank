@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Boss Bank</title>
+<style>
+body{font-family:sans-serif;max-width:400px;margin:20px auto;padding:0 16px}
+input,button{width:100%;padding:12px;margin:6px 0;font-size:16px;box-sizing:border-box}
+button{background:#111;color:#fff;border:0;border-radius:6px}
+#msg{color:#b00}
+</style>
+</head>
+<body>
+<h2>Boss Bank</h2>
+<div id="auth">
+<input id="name" placeholder="Name (register only)">
+<input id="email" type="email" placeholder="Email">
+<input id="password" type="password" placeholder="Password">
+<button onclick="go('login')">Log in</button>
+<button onclick="go('register')">Register</button>
+</div>
+<div id="account" hidden>
+<h3 id="who"></h3>
+<p>Account: <b id="acct"></b></p>
+<p>Balance: <b id="bal"></b></p>
+</div>
+<p id="msg"></p>
+<script>
+const API="https://boss-bank.onrender.com/api";
+async function go(kind){
+  const body={email:email.value,password:password.value};
+  if(kind==="register")body.name=name.value;
+  msg.textContent="Please wait...";
+  try{
+    const r=await fetch(API+"/auth/"+kind,{method:"POST",credentials:"include",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)});
+    const d=await r.json();
+    if(!r.ok){msg.textContent=d.error||"Error";return}
+    msg.textContent="";
+    auth.hidden=true;account.hidden=false;
+    who.textContent="Hello, "+d.user.name;
+    acct.textContent=d.user.accountNumber;
+    bal.textContent=(Number(d.user.balanceMinor)/100).toFixed(2);
+  }catch(e){msg.textContent="Cannot reach server"}
+}
+</script>
+</body>
+</html>
