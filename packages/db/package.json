@@ -12,15 +12,13 @@
     }
   },
   "scripts": {
-    "build": "tsc -p tsconfig.json",
+    "build": "prisma generate && tsc -p tsconfig.json",
     "db:generate": "prisma generate",
     "db:deploy": "prisma migrate deploy",
     "db:migrate": "prisma migrate dev"
   },
   "dependencies": {
-    "@prisma/client": "^6.19.0"
-  },
-  "devDependencies": {
+    "@prisma/client": "^6.19.0",
     "prisma": "^6.19.0"
   }
 }
