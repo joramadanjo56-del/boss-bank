@@ -291,7 +291,47 @@ function ActivityPage() {
   </div>;
 }
 
+function AdminResetPanel() {
+  const [users, setUsers] = useState<PublicUser[]>([]);
+  const [userId, setUserId] = useState("");
+  const [password, setPassword] = useState("");
+  const [message, setMessage] = useState("");
+
+  useEffect(() => {
+    api<{ users: PublicUser[] }>("/admin/users")
+      .then((result) => setUsers(result.users))
+      .catch(() => setMessage("Could not load users"));
+  }, []);
+
+  async function submit() {
+    if (!userId) { setMessage("Choose a user"); return; }
+    if (password.length < 8) { setMessage("Password must be at least 8 characters"); return; }
+    try {
+      await api(`/admin/users/${userId}/password`, { method: "PATCH", body: JSON.stringify({ password }) });
+      setPassword("");
+      setMessage("Password reset. Give the user the temporary password.");
+    } catch (issue) {
+      setMessage(issue instanceof Error ? issue.message : "Password could not be reset");
+    }
+  }
+
+  return <div style={{ padding: "16px 24px" }}>
+    <h2>Reset a user's password</h2>
+    <select value={userId} onChange={(event) => setUserId(event.target.value)} style={{ padding: 10, width: "100%", marginBottom: 8 }}>
+      <option value="">Choose a user</option>
+      {users.map((user) => <option key={user.id} value={user.id}>{user.name} ({user.email})</option>)}
+    </select>
+    <input type="text" placeholder="Temporary password (min 8)" value={password} onChange={(event) => setPassword(event.target.value)} style={{ padding: 10, width: "100%", marginBottom: 8, boxSizing: "border-box" }} />
+    <button type="button" onClick={() => void submit()} style={{ padding: "10px 16px" }}>Reset password</button>
+    {message && <p>{message}</p>}
+  </div>;
+}
+
 function AdminPage() {
+  return <div><AdminPageInner /><AdminResetPanel /></div>;
+}
+
+function AdminPageInner() {
   const [users, setUsers] = useState<PublicUser[]>([]);
   const [wallets, setWallets] = useState<Array<{ id: string; accountNumber: string; balanceMinor: string; currency: string; user: { name: string; email: string; status: string } }>>([]);
   const [error, setError] = useState("");
