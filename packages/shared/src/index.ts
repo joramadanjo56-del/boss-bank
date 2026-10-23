@@ -40,6 +40,10 @@ export const adminStatusSchema = z.object({
   status: z.enum(["ACTIVE", "SUSPENDED"]),
 });
 
+export const adminPasswordSchema = z.object({
+  password: z.string().min(8).max(72),
+});
+
 export type RegisterInput = z.infer<typeof registerSchema>;
 export type LoginInput = z.infer<typeof loginSchema>;
 export type TransferInput = z.infer<typeof transferSchema>;
