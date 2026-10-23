@@ -315,6 +315,17 @@ function AdminPage() {
     } catch (issue) {
       setError(issue instanceof Error ? issue.message : "Status could not be changed");
     }
+  }  async function resetPassword(user: PublicUser) {
+    const password = window.prompt(`Temporary password for ${user.name} (min 8 characters):`);
+    if (!password) return;
+    if (password.length < 8) { setError("Password must be at least 8 characters"); return; }
+    try {
+      await api(`/admin/users/${user.id}/password`, { method: "PATCH", body: JSON.stringify({ password }) });
+      setError("");
+      window.alert(`Password reset for ${user.name}. Give them the temporary password.`);
+    } catch (issue) {
+      setError(issue instanceof Error ? issue.message : "Password could not be reset");
+    }
   }
   return <div className="page admin-page"><div className="page-heading"><div><div className="eyebrow"><span className="eyebrow-line" /> OPERATIONS</div><h1>Administration<span className="heading-period">.</span></h1><p>Member access and wallet balances across Boss Bank.</p></div><span className="admin-badge"><ShieldCheck size={15} /> ADMIN VIEW</span></div>
     {error && <div className="inline-error">{error}</div>}
