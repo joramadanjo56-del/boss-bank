@@ -1,10 +1,12 @@
 import express, { type NextFunction, type Request, type Response } from "express";
 import cors from "cors";
 import helmet from "helmet";
+import bcrypt from "bcryptjs";
 import { rateLimit } from "express-rate-limit";
 import { Prisma, type PrismaClient } from "@boss-bank/db";
 import {
   adminStatusSchema,
+  adminPasswordSchema,
   depositSchema,
   loginSchema,
   registerSchema,
@@ -254,6 +256,21 @@ export function createApp(db: PrismaClient, options: AppOptions = {}) {
     });
     if (!user.wallet) throw new HttpError(404, "Wallet not found", "WALLET_NOT_FOUND");
     response.json({ user: publicUser({ ...user, wallet: user.wallet }) });
+
+  }));  
+
+api.patch("/admin/users/:userId/password", authenticate, requireAdmin, asyncRoute(async (request, response) => {
+    const { password } = adminPasswordSchema.parse(request.body);
+    const userId = Array.isArray(request.params.userId) ? request.params.userId[0] : request.params.userId;
+    if (!userId) throw new HttpError(400, "User id is required", "INVALID_USER_ID");
+    const passwordHash = await bcrypt.hash(password, 12);
+    await db.$transaction(async (tx) => {
+      await tx.user.update({ where: { id: userId }, data: { passwordHash } });
+      await tx.session.deleteMany({ where: { userId } });
+      await tx.auditLog.create({ data: { actorId: request.authUser!.id, action: "admin.user_password_reset", targetType: "user", targetId: userId, ipAddress: request.ip } });
+    });
+
+    response.json({ ok: true });
   }));
 
   app.use("/api", api);
