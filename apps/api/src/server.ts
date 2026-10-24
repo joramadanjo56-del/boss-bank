@@ -16,7 +16,11 @@ await promoteAdmin().catch((error) => {
   console.error("Admin promotion failed", error);
 });
 
-const app = createApp(prisma, { webOrigin: env.webOrigin, nodeEnv: env.nodeEnv });
+const app = createApp(prisma, {
+  webOrigin: env.webOrigin,
+  nodeEnv: env.nodeEnv,
+  allowDevelopmentDeposits: process.env.ALLOW_DEVELOPMENT_DEPOSITS === "true",
+});
 const server = app.listen(env.port, () => {
   console.log(`Boss Bank API listening on http://localhost:${env.port}`);
 });
