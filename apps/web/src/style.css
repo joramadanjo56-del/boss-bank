@@ -582,3 +582,18 @@ button:disabled { cursor: wait; opacity: .7; }
 .card-menu button:active {
   background: rgba(255, 255, 255, .15) !important;
 }
+.select-filter select {
+  appearance: none;
+  -webkit-appearance: none;
+  background: transparent;
+  border: 0;
+  color: #1f3d33;
+  font-size: 15px;
+  font-weight: 500;
+  width: 100%;
+  padding-right: 24px;
+}
+.select-filter select option {
+  background: #ffffff;
+  color: #1f3d33;
+}
