@@ -528,7 +528,44 @@ button:disabled { cursor: wait; opacity: .7; }
   .transaction-amount { font-size: 8px; }
   .page-footer { font-size: 7px; }
 }
-
+.card-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  z-index: 10;
+  min-width: 210px;
+  background: #1f4d3a;
+  border: 1px solid rgba(255, 255, 255, .15);
+  border-radius: 14px;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, .35);
+  padding: 6px;
+}
+.card-menu button {
+  display: block;
+  width: 100%;
+  padding: 12px 14px;
+  text-align: left;
+  background: none;
+  border: 0;
+  border-radius: 10px;
+  color: #fff;
+  font-size: 15px;
+  font-weight: 500;
+}
+.card-menu button:hover,
+.card-menu button:active {
+  background: rgba(255, 255, 255, .12);
+}
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+}.card-menu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  z-index: 10;
+  min-width: 200px;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0,0,0,.2);
+  padding: 6px;
 }
