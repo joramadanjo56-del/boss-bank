@@ -154,12 +154,32 @@ function NavButton({ active, onClick, icon, label }: { active: boolean; onClick:
 
 function Overview({ user, dashboard, openOverlay, navigate }: { user: PublicUser; dashboard: DashboardData; openOverlay: (overlay: Overlay) => void; navigate: (page: Page) => void }) {
   const thisMonth = new Intl.DateTimeFormat("en", { month: "long" }).format(new Date());
+const [menuOpen, setMenuOpen] = useState(false);
+const [copied, setCopied] = useState(false);
+
+function copyAccount() {
+  navigator.clipboard?.writeText(user.accountNumber);
+  setCopied(true);
+  setTimeout(() => { setCopied(false); setMenuOpen(false); }, 1200);
+}
   return <div className="page page-overview">
     <div className="page-heading"><div><div className="eyebrow"><span className="eyebrow-line" /> YOUR MONEY, IN VIEW</div><h1>Good morning, {firstName(user.name)}<span className="heading-period">.</span></h1><p>A little clarity goes a long way. Here’s your wallet at a glance.</p></div><div className="heading-date"><Clock3 size={15} /> {new Intl.DateTimeFormat("en", { weekday: "long", month: "long", day: "numeric" }).format(new Date())}</div></div>
 
     <section className="hero-grid">
       <div className="balance-panel">
-        <div className="balance-top"><div className="balance-label"><span className="balance-icon"><Wallet size={16} /></span> TOTAL WALLET BALANCE</div><button className="text-button balance-menu" title="Wallet details" onClick={() => navigator.clipboard?.writeText(user.accountNumber)}><MoreHorizontal size={21} /></button></div>
+        <div className="balance-top"><div className="balance-label"><span className="balance-icon"><Wallet size={16} /></span> TOTAL WALLET BALANCE</div><div style={{ position: "relative" }}>
+  <button className="text-button balance-menu" title="Wallet details" onClick={() => setMenuOpen(!menuOpen)}>
+    <MoreHorizontal size={21} />
+  </button>
+  {menuOpen && (
+    <div className="card-menu">
+      <button onClick={copyAccount}>{copied ? "Copied ✓" : "Copy account number"}</button>
+      <button onClick={() => { setMenuOpen(false); openOverlay("transfer"); }}>Send money</button>
+      <button onClick={() => { setMenuOpen(false); openOverlay("deposit"); }}>Add funds</button>
+      <button onClick={() => { setMenuOpen(false); navigate("activity"); }}>View activity</button>
+    </div>
+  )}
+</div></div>
         <div className="balance-amount">{formatSsp(dashboard.balanceMinor)}</div>
         <div className="account-line"><span>SSP wallet</span><span className="account-divider" /><button onClick={() => navigator.clipboard?.writeText(user.accountNumber)} title="Copy account number">{user.accountNumber} <Download size={13} /></button><span className="copy-hint">Copy account number</span></div>
         <div className="balance-bottom"><span><span className="live-dot" /> Updated just now</span><span className="balance-note">Available to transfer</span></div>
