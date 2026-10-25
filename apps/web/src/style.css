@@ -558,14 +558,27 @@ button:disabled { cursor: wait; opacity: .7; }
 }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
-}.card-menu {
-  position: absolute;
-  top: 100%;
+}
+.card-menu {
+  background: #1f4d3a !important;
+  width: 220px;
+  height: auto;
   right: 0;
-  z-index: 10;
-  min-width: 200px;
-  background: #fff;
-  border-radius: 12px;
-  box-shadow: 0 8px 24px rgba(0,0,0,.2);
-  padding: 6px;
+  left: auto;
+}
+.card-menu button {
+  display: block !important;
+  width: 100% !important;
+  height: auto !important;
+  padding: 12px 14px !important;
+  background: transparent !important;
+  color: #ffffff !important;
+  font-size: 15px !important;
+  text-align: left !important;
+  border: 0 !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+.card-menu button:active {
+  background: rgba(255, 255, 255, .15) !important;
 }
