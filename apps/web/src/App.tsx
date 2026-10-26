@@ -30,6 +30,7 @@ import {
   Wallet,
   X,
 } from "lucide-react";
+import { QRCodeSVG } from "qrcode.react";
 import type { PublicUser, TransactionItem } from "@boss-bank/shared";
 import { api, ApiError, type DashboardData, type TransactionPage } from "./api.js";
 
@@ -155,6 +156,7 @@ function NavButton({ active, onClick, icon, label }: { active: boolean; onClick:
 function Overview({ user, dashboard, openOverlay, navigate }: { user: PublicUser; dashboard: DashboardData; openOverlay: (overlay: Overlay) => void; navigate: (page: Page) => void }) {
   const thisMonth = new Intl.DateTimeFormat("en", { month: "long" }).format(new Date());
 const [menuOpen, setMenuOpen] = useState(false);
+const [qrOpen, setQrOpen] = useState(false);
 const [copied, setCopied] = useState(false);
 
 function copyAccount() {
@@ -173,8 +175,9 @@ function copyAccount() {
   </button>
   {menuOpen && (
     <div className="card-menu">
-      <button onClick={copyAccount}>{copied ? "Copied ✓" : "Copy account number"}</button>
-      <button onClick={() => { setMenuOpen(false); openOverlay("transfer"); }}>Send money</button>
+      <button onClick={copyAccount}>{copied ? "Copied ✓" : "Copy account number"}</button>    
+<button onClick={() => { setMenuOpen(false); setQrOpen(true); }}>My QR code</button>
+<button onClick={() => { setMenuOpen(false); openOverlay("transfer"); }}>Send money</button>
       <button onClick={() => { setMenuOpen(false); openOverlay("deposit"); }}>Add funds</button>
       <button onClick={() => { setMenuOpen(false); navigate("activity"); }}>View activity</button>
     </div>
