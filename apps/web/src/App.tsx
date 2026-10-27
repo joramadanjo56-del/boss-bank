@@ -181,7 +181,17 @@ function copyAccount() {
       <button onClick={() => { setMenuOpen(false); openOverlay("deposit"); }}>Add funds</button>
       <button onClick={() => { setMenuOpen(false); navigate("activity"); }}>View activity</button>
     </div>
-  )}
+  )}{qrOpen && (
+  <div className="qr-backdrop" onClick={() => setQrOpen(false)}>
+    <div className="qr-card" onClick={(e) => e.stopPropagation()}>
+      <h3>Receive money</h3>
+      <QRCodeSVG value={user.accountNumber} size={200} />
+      <p className="qr-name">{user.name}</p>
+      <p className="qr-number">{user.accountNumber}</p>
+      <button onClick={() => setQrOpen(false)}>Close</button>
+    </div>
+  </div>
+)}
 </div></div>
         <div className="balance-amount">{formatSsp(dashboard.balanceMinor)}</div>
         <div className="account-line"><span>SSP wallet</span><span className="account-divider" /><button onClick={() => navigator.clipboard?.writeText(user.accountNumber)} title="Copy account number">{user.accountNumber} <Download size={13} /></button><span className="copy-hint">Copy account number</span></div>
