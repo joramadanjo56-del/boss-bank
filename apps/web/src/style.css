@@ -596,4 +596,9 @@ button:disabled { cursor: wait; opacity: .7; }
 .select-filter select option {
   background: #ffffff;
   color: #1f3d33;
-}
+}.qr-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,.5); display: grid; place-items: center; z-index: 100; }
+.qr-card { background: #fff; color: #1f3d33; border-radius: 20px; padding: 24px; text-align: center; width: min(320px, 90vw); }
+.qr-card h3 { margin: 0 0 16px; }
+.qr-name { font-weight: 600; margin: 14px 0 2px; }
+.qr-number { margin: 0 0 16px; opacity: .7; }
+.qr-card button { width: 100%; padding: 12px; border: 0; border-radius: 12px; background: #1f4d3a; color: #fff; font-size: 15px; }
