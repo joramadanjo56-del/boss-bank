@@ -602,3 +602,5 @@ button:disabled { cursor: wait; opacity: .7; }
 .qr-name { font-weight: 600; margin: 14px 0 2px; }
 .qr-number { margin: 0 0 16px; opacity: .7; }
 .qr-card button { width: 100%; padding: 12px; border: 0; border-radius: 12px; background: #1f4d3a; color: #fff; font-size: 15px; }
+.qr-video { width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 12px; background: #000; }
+.scan-button { margin-top: 8px; padding: 8px 12px; border: 1px solid #1f4d3a; border-radius: 10px; background: #fff; color: #1f4d3a; font-size: 14px; }
