@@ -407,7 +407,56 @@ function AdminPageInner() {
     <p className="activity-disclaimer"><ShieldCheck size={14} /> All account status changes are recorded in the audit log. Wallet balances are read-only here.</p>
   </div>;
 }
+function QrScanner({ onResult, onClose }: { onResult: (value: string) => void; onClose: () => void }) {
+  const [message, setMessage] = useState("Point the camera at a QR code");
 
+  useEffect(() => {
+    let stream: MediaStream | null = null;
+    let timer = 0;
+    let stopped = false;
+    async function start() {
+      const Detector = (window as any).BarcodeDetector;
+      if (!Detector) { setMessage("Scanning is not supported on this browser"); return; }
+      try {
+        stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
+        if (stopped) { stream.getTracks().forEach((t) => t.stop()); return; }
+        const video = document.getElementById("qr-video") as HTMLVideoElement | null;
+        if (!video) return;
+        video.srcObject = stream;
+        await video.play();
+        const detector = new Detector({ formats: ["qr_code"] });
+        timer = window.setInterval(async () => {
+          try {
+            const codes = await detector.detect(video);
+            if (codes.length > 0) {
+              window.clearInterval(timer);
+              onResult(String(codes[0].rawValue));
+            }
+          } catch {}
+        }, 400);
+      } catch {
+        setMessage("Camera permission was denied");
+      }
+    }
+    void start();
+    return () => {
+      stopped = true;
+      window.clearInterval(timer);
+      stream?.getTracks().forEach((t) => t.stop());
+    };
+  }, []);
+
+  return (
+    <div className="qr-backdrop" onClick={onClose}>
+      <div className="qr-card" onClick={(e) => e.stopPropagation()}>
+        <h3>Scan QR code</h3>
+        <video id="qr-video" className="qr-video" playsInline muted />
+        <p className="qr-number">{message}</p>
+        <button onClick={onClose}>Cancel</button>
+      </div>
+    </div>
+  );
+}
 function MoneyModal({ type, close, user, onSuccess }: { type: Exclude<Overlay, null>; close: () => void; user: PublicUser; onSuccess: (message: string) => Promise<void> }) {
   const [amount, setAmount] = useState("");
   const [accountNumber, setAccountNumber] = useState("");
