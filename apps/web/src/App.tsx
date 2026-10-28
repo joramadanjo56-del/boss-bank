@@ -452,7 +452,7 @@ function QrScanner({ onResult, onClose }: { onResult: (value: string) => void; o
         <h3>Scan QR code</h3>
         <video id="qr-video" className="qr-video" playsInline muted />
         <p className="qr-number">{message}</p>
-        <button onClick={onClose}>Cancel</button>
+        <button type="button" onClick={onClose}>Cancel</button>
       </div>
     </div>
   );
@@ -464,6 +464,7 @@ function MoneyModal({ type, close, user, onSuccess }: { type: Exclude<Overlay, n
   const [category, setCategory] = useState("Other");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
+  const [scanning, setScanning] = useState(false);
   const isDeposit = type === "deposit";
 
   async function submit(event: FormEvent<HTMLFormElement>) {
@@ -493,7 +494,8 @@ function MoneyModal({ type, close, user, onSuccess }: { type: Exclude<Overlay, n
   }, [close]);
 
   return <div className="modal-backdrop" onMouseDown={(event) => { if (event.target === event.currentTarget) close(); }}><section className="money-modal" role="dialog" aria-modal="true" aria-labelledby="money-modal-title"><div className="modal-top"><span className={`modal-icon ${isDeposit ? "modal-deposit-icon" : "modal-transfer-icon"}`}>{isDeposit ? <Plus size={19} /> : <Send size={18} />}</span><button className="icon-button" title="Close" onClick={close}><X size={19} /></button></div><div className="modal-eyebrow">{isDeposit ? "DEVELOPMENT MODE" : "SECURE TRANSFER"}</div><h2 id="money-modal-title">{isDeposit ? "Add funds" : "Send money"}</h2><p>{isDeposit ? "Simulate a deposit to your SSP wallet. No real funds are involved." : "Send SSP instantly to another Boss Bank wallet."}</p><div className="modal-balance"><span>Available balance</span><strong>{formatSsp(user.balanceMinor)}</strong></div><form onSubmit={submit}>
-    {!isDeposit && <label className="field-label">Recipient account number<input autoFocus value={accountNumber} onChange={(event) => setAccountNumber(event.target.value.toUpperCase())} placeholder="BB0000000000" maxLength={12} autoComplete="off" required /><small>12 characters, starting with BB</small></label>}
+    {!isDeposit && <label className="field-label">Recipient account number<input autoFocus value={accountNumber} onChange={(event) => setAccountNumber(event.target.value.toUpperCase())} placeholder="BB0000000000" maxLength={12} autoComplete="off" required /><small>12 characters, starting with BB</small><button type="button" className="scan-button" onClick={() => setScanning(true)}>Scan QR code</button></label>}
+{scanning && <QrScanner onResult={(value) => { setAccountNumber(value.trim().toUpperCase()); setScanning(false); }} onClose={() => setScanning(false)} />}
     <label className="field-label">Amount<div className="amount-input-wrap"><span>SSP</span><input inputMode="decimal" value={amount} onChange={(event) => setAmount(event.target.value)} placeholder="0.00" autoFocus={isDeposit} required /><small>SSP</small></div></label>
     {!isDeposit && <label className="field-label">Spending category<select value={category} onChange={(event) => setCategory(event.target.value)}><option>Other</option><option>Home</option><option>Food</option><option>Transport</option><option>Family</option></select></label>}
     <label className="field-label">Note <span className="optional-label">OPTIONAL</span><input value={memo} onChange={(event) => setMemo(event.target.value)} placeholder={isDeposit ? "What is this deposit for?" : "Add a note for this transfer"} maxLength={140} /></label>
